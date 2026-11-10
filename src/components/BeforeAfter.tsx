@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 
 // Before/After 对比滑块：拖动中间分割线查看发型前后对比
 export default function BeforeAfter({
@@ -11,8 +11,18 @@ export default function BeforeAfter({
   after: string;
 }) {
   const [pos, setPos] = useState(50);
+  const [boxWidth, setBoxWidth] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
+
+  // 内层图片要保持完整宽度再被裁剪；容器尺寸变化时同步
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setBoxWidth(el.clientWidth));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const move = useCallback((clientX: number) => {
     const rect = ref.current?.getBoundingClientRect();
@@ -44,7 +54,7 @@ export default function BeforeAfter({
           src={before}
           alt="Original photo"
           className="h-full w-full object-cover"
-          style={{ width: ref.current?.clientWidth ? `${ref.current.clientWidth}px` : "100%", maxWidth: "none" }}
+          style={{ width: boxWidth ? `${boxWidth}px` : "100%", maxWidth: "none" }}
         />
       </div>
       <div

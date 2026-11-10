@@ -1,0 +1,4 @@
+# OpenNext 部署到 Workers 后，静态资源不经过 Worker，
+# next.config 的 headers() 对这些路径不生效，需要 _headers
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

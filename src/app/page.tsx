@@ -3,7 +3,7 @@ import TryOnTool from "@/components/TryOnTool";
 const FAQS = [
   {
     q: "Is this hairstyle try on free?",
-    a: "Yes — you get 2 free try-ons every day, no sign-up needed. More renders and premium styles can be unlocked with credit packs.",
+    a: "Yes — you get 2 free try-ons every day, no sign-up needed. More renders can be unlocked anytime with credit packs (1 credit = 1 render) on the Credits page.",
   },
   {
     q: "How does it work?",

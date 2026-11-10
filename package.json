@@ -6,9 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf-typegen": "wrangler types",
+    "db:migrate:local": "wrangler d1 migrations apply hairstyle-tryon --local",
+    "db:migrate:remote": "wrangler d1 migrations apply hairstyle-tryon --remote"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.20.16",
+    "jose": "^6.2.16",
     "next": "16.4.5",
     "react": "19.3.0",
     "react-dom": "19.3.0"
@@ -21,6 +28,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.159.0"
   }
 }

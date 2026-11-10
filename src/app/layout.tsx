@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
+import Link from "next/link";
+import Header from "@/components/Header";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,21 +36,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-neutral-50 text-neutral-900">
+        <Header />
         {children}
         <footer className="border-t border-neutral-200 py-6 text-center text-xs text-neutral-500">
           <p>
             © 2026 Hairstyle Try On ·{" "}
-            <a href="/" className="hover:underline">
+            <Link href="/" className="hover:underline">
               Hairstyle Try On
-            </a>{" "}
+            </Link>{" "}
             ·{" "}
-            <a href="/hairstyle-changer" className="hover:underline">
+            <Link href="/hairstyle-changer" className="hover:underline">
               Hairstyle Changer
-            </a>{" "}
+            </Link>{" "}
             ·{" "}
-            <a href="/hairstyle-try-on-app" className="hover:underline">
+            <Link href="/hairstyle-try-on-app" className="hover:underline">
               App
-            </a>
+            </Link>
           </p>
           <p className="mt-1">AI-generated previews for inspiration. Your photos are never stored.</p>
         </footer>

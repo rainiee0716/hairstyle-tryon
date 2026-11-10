@@ -15,7 +15,7 @@ export default function HairstyleTryOnApp() {
           Hairstyle Try On App — no download, works on any phone
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-neutral-600 sm:text-lg">
-          You don't need an app store. This hairstyle try on app runs right in your browser —
+          You don&apos;t need an app store. This hairstyle try on app runs right in your browser —
           upload a selfie, try haircuts on your own photo, save and share for free.
         </p>
       </section>

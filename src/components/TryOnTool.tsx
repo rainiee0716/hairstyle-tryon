@@ -22,6 +22,30 @@ const FEMALE_STYLES = [
 
 type Phase = "idle" | "rendering" | "done" | "error" | "limit";
 
+// AI 渲染用不到原始分辨率的大图：最长边压到 1024、JPEG 输出，
+// 上传更快，也避免 Workers 免费版 10ms CPU 解析超大 base64 时超限。
+async function compressImage(file: File): Promise<string> {
+  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const maxSide = 1024;
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+  const w = Math.max(1, Math.round(bitmap.width * scale));
+  const h = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("canvas unsupported");
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  bitmap.close();
+  let quality = 0.85;
+  let dataUrl = canvas.toDataURL("image/jpeg", quality);
+  while (dataUrl.length > 2_600_000 && quality > 0.4) {
+    quality -= 0.15;
+    dataUrl = canvas.toDataURL("image/jpeg", quality);
+  }
+  return dataUrl;
+}
+
 export default function TryOnTool() {
   const [photo, setPhoto] = useState<string>("");
   const [gender, setGender] = useState<"male" | "female">("male");
@@ -39,13 +63,16 @@ export default function TryOnTool() {
       setPhase("error");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPhoto(reader.result as string);
-      setResult("");
-      setPhase("idle");
-    };
-    reader.readAsDataURL(f);
+    compressImage(f)
+      .then((dataUrl) => {
+        setPhoto(dataUrl);
+        setResult("");
+        setPhase("idle");
+      })
+      .catch(() => {
+        setErrorMsg("Could not read this image. Please use a JPEG or PNG photo.");
+        setPhase("error");
+      });
   }
 
   async function render() {
@@ -66,8 +93,8 @@ export default function TryOnTool() {
       if (!res.ok) throw new Error(j.message || "render failed");
       setResult(j.image);
       setPhase("done");
-    } catch (e: any) {
-      setErrorMsg(e?.message || "Something went wrong. Please try again.");
+    } catch (e: unknown) {
+      setErrorMsg(e instanceof Error && e.message ? e.message : "Something went wrong. Please try again.");
       setPhase("error");
     }
   }
@@ -203,8 +230,15 @@ export default function TryOnTool() {
         >
           {errorMsg}
           {phase === "limit" && (
-            <p className="mt-1 text-xs">
-              Credit packs are coming soon — for now, come back tomorrow.
+            <p className="mt-2 text-xs">
+              Need more?{" "}
+              <a href="/pricing" className="font-semibold underline">
+                Get credit packs →
+              </a>{" "}
+              ·{" "}
+              <a href="/login" className="underline">
+                Sign in
+              </a>
             </p>
           )}
         </div>

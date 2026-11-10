@@ -1,0 +1,23 @@
+# 本地开发密钥（cp .dev.vars.example .dev.vars 后填写；.dev.vars 已被 gitignore）
+# wrangler/miniflare 会把它注入本地 process.env
+
+# 会话签名密钥：随便一个长随机串（openssl rand -hex 32）
+AUTH_SECRET=dev-only-secret-change-me
+
+# Google 登录（不配置则 /login 提示未配置，其余功能不受影响）
+# GOOGLE_CLIENT_ID=
+# GOOGLE_CLIENT_SECRET=
+
+# 支付（不配置则 /pricing 隐藏对应支付按钮）
+# STRIPE_SECRET_KEY=sk_test_xxx
+# STRIPE_WEBHOOK_SECRET=whsec_xxx
+# PAYPAL_CLIENT_ID=
+# PAYPAL_CLIENT_SECRET=
+# PAYPAL_ENV=sandbox
+
+# 渲染供应商（不配置则 mock 模式返回原图）
+# IMAGE_PROVIDER=gemini
+# GEMINI_API_KEY=
+# IMAGE_PROVIDER=ark
+# ARK_API_KEY=
+# ARK_IMAGE_MODEL=doubao-seededit-3-0-i2i

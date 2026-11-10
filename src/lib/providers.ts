@@ -1,14 +1,17 @@
 // 发型渲染供应商适配层：环境变量 IMAGE_PROVIDER 选择 gemini | ark | mock
 // 每个供应商实现同一个接口：输入用户照片(base64 dataURL) + 发型描述 → 输出渲染后的 dataURL
+// 注意：密钥用 getEnv() 读（本地 dev 时 .dev.vars 只注入 cloudflare binding 上下文，
+// 不一定同步进 process.env；生产 Workers 上 OpenNext 会把 env 同步进 process.env）。
+import { getEnv } from "./env";
 
 export type ProviderName = "gemini" | "ark" | "mock";
 
 export function getProvider(): ProviderName {
-  const p = (process.env.IMAGE_PROVIDER || "").toLowerCase();
+  const p = (getEnv("IMAGE_PROVIDER") || "").toLowerCase();
   if (p === "gemini" || p === "ark" || p === "mock") return p;
   // 自动探测：有哪个 key 就用哪家
-  if (process.env.GEMINI_API_KEY) return "gemini";
-  if (process.env.ARK_API_KEY) return "ark";
+  if (getEnv("GEMINI_API_KEY")) return "gemini";
+  if (getEnv("ARK_API_KEY")) return "ark";
   return "mock";
 }
 
@@ -61,7 +64,7 @@ export async function renderHairstyle(
 }
 
 async function renderGemini(prompt: string, imageDataUrl: string): Promise<string> {
-  const key = process.env.GEMINI_API_KEY;
+  const key = getEnv("GEMINI_API_KEY");
   if (!key) throw new Error("GEMINI_API_KEY not set");
   const m = imageDataUrl.match(/^data:(.+?);base64,(.+)$/);
   if (!m) throw new Error("bad image data");
@@ -94,9 +97,9 @@ async function renderGemini(prompt: string, imageDataUrl: string): Promise<strin
 }
 
 async function renderArk(prompt: string, imageDataUrl: string): Promise<string> {
-  const key = process.env.ARK_API_KEY;
+  const key = getEnv("ARK_API_KEY");
   if (!key) throw new Error("ARK_API_KEY not set");
-  const model = process.env.ARK_IMAGE_MODEL || "doubao-seededit-3-0-i2i";
+  const model = getEnv("ARK_IMAGE_MODEL") || "doubao-seededit-3-0-i2i";
   const res = await fetch("https://ark.cn-beijing.volces.com/api/v3/images/generations", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
